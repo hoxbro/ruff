@@ -222,7 +222,7 @@ pub(crate) fn unused_loop_control_variable_comprehension(
             Expr::GeneratorExp(gen) => {
                 finder.visit_expr(&gen.elt);
             }
-            _ => {}
+            _ => return,
         }
         finder.names
     };
