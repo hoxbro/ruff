@@ -193,24 +193,39 @@ pub(crate) fn unused_loop_control_variable_comprehension(
 
     let used_names = {
         let mut finder = NameFinder::new();
-        // finder.visit_expr(&stmt_expr.value.as_ref());
-
-        // check if list comprehension and make get value from it
-        if let Expr::ListComp(list_comp) = stmt_expr.value.as_ref() {
-            finder.visit_expr(&list_comp.elt);
-            for gen in &list_comp.generators {
-                // finder.visit_expr(&gen.iter);
-                // finder.visit_expr(&gen.target);
-                for if_expr in &gen.ifs {
-                    finder.visit_expr(if_expr);
+        match stmt_expr.value.as_ref() {
+            Expr::ListComp(list_comp) => {
+                finder.visit_expr(&list_comp.elt);
+                for gen in &list_comp.generators {
+                    for if_expr in &gen.ifs {
+                        finder.visit_expr(if_expr);
+                    }
                 }
             }
+            Expr::SetComp(set_comp) => {
+                finder.visit_expr(&set_comp.elt);
+                for gen in &set_comp.generators {
+                    for if_expr in &gen.ifs {
+                        finder.visit_expr(if_expr);
+                    }
+                }
+            }
+            Expr::DictComp(dict_comp) => {
+                finder.visit_expr(&dict_comp.key);
+                finder.visit_expr(&dict_comp.value);
+                for gen in &dict_comp.generators {
+                    for if_expr in &gen.ifs {
+                        finder.visit_expr(if_expr);
+                    }
+                }
+            }
+            Expr::GeneratorExp(gen) => {
+                finder.visit_expr(&gen.elt);
+            }
+            _ => {}
         }
-
         finder.names
     };
-    println!("control names {:?}", control_names);
-    println!("used names {:?}", used_names);
 
     for (name, expr) in control_names {
         // Ignore names that are already underscore-prefixed.
