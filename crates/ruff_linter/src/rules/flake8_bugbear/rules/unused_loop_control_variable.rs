@@ -221,6 +221,11 @@ pub(crate) fn unused_loop_control_variable_comprehension(
             }
             Expr::GeneratorExp(gen) => {
                 finder.visit_expr(&gen.elt);
+                for gen in &gen.generators {
+                    for if_expr in &gen.ifs {
+                        finder.visit_expr(if_expr);
+                    }
+                }
             }
             _ => return,
         }
