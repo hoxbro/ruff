@@ -10,13 +10,16 @@ pub(crate) fn comprehension(comprehension: &Comprehension, checker: &mut Checker
     if checker.enabled(Rule::InDictKeys) {
         flake8_simplify::rules::key_in_dict_comprehension(checker, comprehension);
     }
-    let Stmt::Expr(stmt_expr) = checker.semantic.current_statement() else {
-        unreachable!("Expected Stmt::Expr");
-    };
 
-    flake8_bugbear::rules::unused_loop_control_variable_comprehension(
-        checker,
-        stmt_expr,
-        comprehension,
-    );
+    if checker.enabled(Rule::UnusedLoopControlVariable) {
+        let Stmt::Expr(stmt_expr) = checker.semantic.current_statement() else {
+            unreachable!("Expected Stmt::Expr");
+        };
+
+        flake8_bugbear::rules::unused_loop_control_variable_comprehension(
+            checker,
+            stmt_expr,
+            comprehension,
+        );
+    }
 }
