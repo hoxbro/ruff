@@ -104,3 +104,16 @@ for key, value in current_crawler_tags.items():
         pass
     elif wanted_tag_value != value:
         pass
+
+
+# Check comprehensions - Fixing
+(x for x, y in zip(xs, ys))
+[x for x, y in zip(xs, ys)]
+{x for x, y in zip(xs, ys)}
+{x: x for x, y in zip(xs, ys)}
+
+# Check comprehensions - Unfixable
+(x for x, y in zip(xs, ys) if y == 1)
+[x for x, y in zip(xs, ys) if y == 1]
+{x for x, y in zip(xs, ys) if y == 1}
+{x: x for x, y in zip(xs, ys) if y == 1}
