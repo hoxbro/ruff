@@ -111,9 +111,15 @@ for key, value in current_crawler_tags.items():
 [x for x, y in zip(xs, ys)]
 {x for x, y in zip(xs, ys)}
 {x: x for x, y in zip(xs, ys)}
+{x: "value" for x, y in zip(xs, ys)}
+{"key": x for x, y in zip(xs, ys)}
 
 # Check comprehensions - Unfixable
 (x for x, y in zip(xs, ys) if y == 1)
 [x for x, y in zip(xs, ys) if y == 1]
 {x for x, y in zip(xs, ys) if y == 1}
 {x: x for x, y in zip(xs, ys) if y == 1}
+(x if y == 1 else 0 for x, y in zip(xs, ys))
+[x if y == 1 else 0 for x, y in zip(xs, ys)]
+{x if y == 1 else 0 for x, y in zip(xs, ys)}
+{x: x if y == 1 else 0 for x, y in zip(xs, ys)}
