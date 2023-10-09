@@ -13,7 +13,7 @@ pub(crate) fn comprehension(comprehension: &Comprehension, checker: &mut Checker
 
     if checker.enabled(Rule::UnusedLoopControlVariable) {
         let Stmt::Expr(stmt_expr) = checker.semantic.current_statement() else {
-            unreachable!("Expected Stmt::Expr");
+            return;
         };
 
         flake8_bugbear::rules::unused_loop_control_variable_comprehension(
