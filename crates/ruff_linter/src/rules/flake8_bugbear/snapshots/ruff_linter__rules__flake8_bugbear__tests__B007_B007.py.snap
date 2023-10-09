@@ -183,4 +183,128 @@ B007.py:98:5: B007 Loop control variable `line_` not used within loop body
 99 |     fp.readline()
    |
 
+B007.py:110:11: B007 [*] Loop control variable `y` not used within loop body
+    |
+109 | # Check comprehensions - Fixing
+110 | (x for x, y in zip(xs, ys))
+    |           ^ B007
+111 | [x for x, y in zip(xs, ys)]
+112 | {x for x, y in zip(xs, ys)}
+    |
+    = help: Rename unused `y` to `_y`
+
+ℹ Fix
+107 107 | 
+108 108 | 
+109 109 | # Check comprehensions - Fixing
+110     |-(x for x, y in zip(xs, ys))
+    110 |+(x for x, _y in zip(xs, ys))
+111 111 | [x for x, y in zip(xs, ys)]
+112 112 | {x for x, y in zip(xs, ys)}
+113 113 | {x: x for x, y in zip(xs, ys)}
+
+B007.py:111:11: B007 [*] Loop control variable `y` not used within loop body
+    |
+109 | # Check comprehensions - Fixing
+110 | (x for x, y in zip(xs, ys))
+111 | [x for x, y in zip(xs, ys)]
+    |           ^ B007
+112 | {x for x, y in zip(xs, ys)}
+113 | {x: x for x, y in zip(xs, ys)}
+    |
+    = help: Rename unused `y` to `_y`
+
+ℹ Fix
+108 108 | 
+109 109 | # Check comprehensions - Fixing
+110 110 | (x for x, y in zip(xs, ys))
+111     |-[x for x, y in zip(xs, ys)]
+    111 |+[x for x, _y in zip(xs, ys)]
+112 112 | {x for x, y in zip(xs, ys)}
+113 113 | {x: x for x, y in zip(xs, ys)}
+114 114 | {x: "value" for x, y in zip(xs, ys)}
+
+B007.py:112:11: B007 [*] Loop control variable `y` not used within loop body
+    |
+110 | (x for x, y in zip(xs, ys))
+111 | [x for x, y in zip(xs, ys)]
+112 | {x for x, y in zip(xs, ys)}
+    |           ^ B007
+113 | {x: x for x, y in zip(xs, ys)}
+114 | {x: "value" for x, y in zip(xs, ys)}
+    |
+    = help: Rename unused `y` to `_y`
+
+ℹ Fix
+109 109 | # Check comprehensions - Fixing
+110 110 | (x for x, y in zip(xs, ys))
+111 111 | [x for x, y in zip(xs, ys)]
+112     |-{x for x, y in zip(xs, ys)}
+    112 |+{x for x, _y in zip(xs, ys)}
+113 113 | {x: x for x, y in zip(xs, ys)}
+114 114 | {x: "value" for x, y in zip(xs, ys)}
+115 115 | {"key": x for x, y in zip(xs, ys)}
+
+B007.py:113:14: B007 [*] Loop control variable `y` not used within loop body
+    |
+111 | [x for x, y in zip(xs, ys)]
+112 | {x for x, y in zip(xs, ys)}
+113 | {x: x for x, y in zip(xs, ys)}
+    |              ^ B007
+114 | {x: "value" for x, y in zip(xs, ys)}
+115 | {"key": x for x, y in zip(xs, ys)}
+    |
+    = help: Rename unused `y` to `_y`
+
+ℹ Fix
+110 110 | (x for x, y in zip(xs, ys))
+111 111 | [x for x, y in zip(xs, ys)]
+112 112 | {x for x, y in zip(xs, ys)}
+113     |-{x: x for x, y in zip(xs, ys)}
+    113 |+{x: x for x, _y in zip(xs, ys)}
+114 114 | {x: "value" for x, y in zip(xs, ys)}
+115 115 | {"key": x for x, y in zip(xs, ys)}
+116 116 | 
+
+B007.py:114:20: B007 [*] Loop control variable `y` not used within loop body
+    |
+112 | {x for x, y in zip(xs, ys)}
+113 | {x: x for x, y in zip(xs, ys)}
+114 | {x: "value" for x, y in zip(xs, ys)}
+    |                    ^ B007
+115 | {"key": x for x, y in zip(xs, ys)}
+    |
+    = help: Rename unused `y` to `_y`
+
+ℹ Fix
+111 111 | [x for x, y in zip(xs, ys)]
+112 112 | {x for x, y in zip(xs, ys)}
+113 113 | {x: x for x, y in zip(xs, ys)}
+114     |-{x: "value" for x, y in zip(xs, ys)}
+    114 |+{x: "value" for x, _y in zip(xs, ys)}
+115 115 | {"key": x for x, y in zip(xs, ys)}
+116 116 | 
+117 117 | # Check comprehensions - Unfixable
+
+B007.py:115:18: B007 [*] Loop control variable `y` not used within loop body
+    |
+113 | {x: x for x, y in zip(xs, ys)}
+114 | {x: "value" for x, y in zip(xs, ys)}
+115 | {"key": x for x, y in zip(xs, ys)}
+    |                  ^ B007
+116 | 
+117 | # Check comprehensions - Unfixable
+    |
+    = help: Rename unused `y` to `_y`
+
+ℹ Fix
+112 112 | {x for x, y in zip(xs, ys)}
+113 113 | {x: x for x, y in zip(xs, ys)}
+114 114 | {x: "value" for x, y in zip(xs, ys)}
+115     |-{"key": x for x, y in zip(xs, ys)}
+    115 |+{"key": x for x, _y in zip(xs, ys)}
+116 116 | 
+117 117 | # Check comprehensions - Unfixable
+118 118 | (x for x, y in zip(xs, ys) if y == 1)
+
 

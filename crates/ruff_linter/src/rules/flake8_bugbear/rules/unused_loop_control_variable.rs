@@ -179,3 +179,111 @@ pub(crate) fn unused_loop_control_variable(checker: &mut Checker, stmt_for: &ast
         checker.diagnostics.push(diagnostic);
     }
 }
+
+pub(crate) fn unused_loop_control_variable_comprehension(
+    checker: &mut Checker,
+    stmt_expr: &ast::StmtExpr,
+    comprehension: &ast::Comprehension,
+) {
+    let control_names = {
+        let mut finder = NameFinder::new();
+        finder.visit_expr(&comprehension.target);
+        finder.names
+    };
+
+    let used_names = {
+        let mut finder = NameFinder::new();
+        match stmt_expr.value.as_ref() {
+            Expr::ListComp(list_comp) => {
+                finder.visit_expr(&list_comp.elt);
+                for gen in &list_comp.generators {
+                    for if_expr in &gen.ifs {
+                        finder.visit_expr(if_expr);
+                    }
+                }
+            }
+            Expr::SetComp(set_comp) => {
+                finder.visit_expr(&set_comp.elt);
+                for gen in &set_comp.generators {
+                    for if_expr in &gen.ifs {
+                        finder.visit_expr(if_expr);
+                    }
+                }
+            }
+            Expr::DictComp(dict_comp) => {
+                finder.visit_expr(&dict_comp.key);
+                finder.visit_expr(&dict_comp.value);
+                for gen in &dict_comp.generators {
+                    for if_expr in &gen.ifs {
+                        finder.visit_expr(if_expr);
+                    }
+                }
+            }
+            Expr::GeneratorExp(gen) => {
+                finder.visit_expr(&gen.elt);
+                for gen in &gen.generators {
+                    for if_expr in &gen.ifs {
+                        finder.visit_expr(if_expr);
+                    }
+                }
+            }
+            _ => return,
+        }
+        finder.names
+    };
+
+    for (name, expr) in control_names {
+        // Ignore names that are already underscore-prefixed.
+        if checker.settings.dummy_variable_rgx.is_match(name) {
+            continue;
+        }
+
+        // Ignore any names that are actually used in the loop body.
+        if used_names.contains_key(name) {
+            continue;
+        }
+
+        // Avoid fixing any variables that _may_ be used, but undetectably so.
+        let certainty = Certainty::Certain;
+
+        // Attempt to rename the variable by prepending an underscore, but avoid
+        // applying the fix if doing so wouldn't actually cause us to ignore the
+        // violation in the next pass.
+        let rename = format!("_{name}");
+        let rename = checker
+            .settings
+            .dummy_variable_rgx
+            .is_match(rename.as_str())
+            .then_some(rename);
+
+        let mut diagnostic = Diagnostic::new(
+            UnusedLoopControlVariable {
+                name: name.to_string(),
+                rename: rename.clone(),
+                certainty,
+            },
+            expr.range(),
+        );
+        if checker.patch(diagnostic.kind.rule()) {
+            if let Some(rename) = rename {
+                if certainty.into() {
+                    // Avoid fixing if the variable, or any future bindings to the variable, are
+                    // used _after_ the loop.
+                    let scope = checker.semantic().current_scope();
+                    if scope
+                        .get_all(name)
+                        .map(|binding_id| checker.semantic().binding(binding_id))
+                        .filter(|binding| binding.start() >= expr.start())
+                        .all(|binding| !binding.is_used())
+                    {
+                        diagnostic.set_fix(Fix::safe_edit(Edit::range_replacement(
+                            rename,
+                            expr.range(),
+                        )));
+                    }
+                }
+            }
+        }
+        checker.diagnostics.push(diagnostic);
+    }
+}
